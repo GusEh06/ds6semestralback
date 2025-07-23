@@ -1,0 +1,42 @@
+# Ignorar caché de Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignorar entorno virtual
+venv/
+
+# Ignorar archivos de entorno
+.env
+.env.*
+!.env.example
+
+# Ignorar archivos de configuración de Django
+*.log
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Environment
+.env
+.env.*
+!.env.example
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+
