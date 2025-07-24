@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     VisitanteViewSet, registro_usuario, obtener_usuario, mostrar_sendero, listar_senderos, mostrar_foto_sendero, listar_fotos_senderos
+,login_usuario
 )
 
 router = DefaultRouter()
@@ -13,6 +14,7 @@ urlpatterns = [
     # Usuarios
     path('registro/', registro_usuario, name='registro-usuario'),
     path('usuario/<int:id>/', obtener_usuario, name='obtener-usuario'),
+    path('login/', login_usuario, name='login-usuario'),
 
     # Senderos
     path('sendero/<int:id>/', mostrar_sendero, name='mostrar-sendero'),
