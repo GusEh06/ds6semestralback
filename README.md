@@ -17,25 +17,41 @@ Sistema web integral para la gestión de visitantes, senderos y análisis estad�
 
 ---
 
+---
 ## 🏗️ Arquitectura del Sistema
-
 ```
-parque-nacional-api/
-├── 📁 api/                     # Aplicación principal
-│   ├── 📄 models.py           # Modelos de datos
-│   ├── 📄 serializers.py      # Serializadores API
-│   ├── 📄 views.py            # Vistas y endpoints
-│   ├── 📄 urls.py             # Configuración de URLs
-│   └── 📁 services/           # Lógica de negocio
-│       ├── 📄 dashboard_service.py
-│       ├── 📄 usuario_service.py
-│       └── 📄 sendero_service.py
-├── 📁 docs/                   # Documentación
-├── 📁 migrations/             # Migraciones de BD
-├── 📄 requirements.txt        # Dependencias
-└── 📄 .env.example           # Variables de entorno
+proyecto-api/
+├── 📁 api/                          # Aplicación principal Django
+│   ├── 📁 migrations/               # Migraciones de base de datos
+│   ├── 📁 services/                 # Capa de servicios (lógica de negocio)
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 comentario_service.py  # Gestión de comentarios
+│   │   ├── 📄 dashboard_service.py   # Métricas y dashboard
+│   │   ├── 📄 foto_sendero_service.py # Management de fotos
+│   │   ├── 📄 sendero_service.py     # Lógica de senderos
+│   │   ├── 📄 usuario_service.py     # Gestión de usuarios
+│   │   └── 📄 valoracion_service.py  # Sistema de valoraciones
+│   ├── 📄 __init__.py
+│   ├── 📄 admin.py                  # Configuración admin Django
+│   ├── 📄 apps.py                   # Configuración de la app
+│   ├── 📄 models.py                 # Modelos de datos (ORM)
+│   ├── 📄 serializers.py            # Serializadores DRF
+│   ├── 📄 tests.py                  # Tests unitarios
+│   ├── 📄 urls.py                   # Rutas de la API
+│   └── 📄 views.py                  # Vistas y endpoints
+├── 📁 docs/                         # Documentación del proyecto
+│   └── 📄 dashboard.md              # Documentación del dashboard
+├── 📁 parque_api/                   # Configuración principal del proyecto
+│   ├── 📄 __init__.py
+│   ├── 📄 asgi.py                   # Configuración ASGI
+│   ├── 📄 settings.py               # Configuración Django
+│   ├── 📄 urls.py                   # URLs principales
+│   └── 📄 wsgi.py                   # Configuración WSGI
+├── 📄 .gitignore                    # Archivos ignorados por Git
+├── 📄 README.md                     # Documentación principal
+├── 📄 manage.py                     # Script de gestión Django
+└── 📄 requirements.txt              # Dependencias del proyecto
 ```
-
 ---
 
 ### 🗂️ Índice de Documentación
