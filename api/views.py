@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from .models import Visitante
+from .models import Visitante, Encuesta
 from .serializers import VisitanteSerializer
 from rest_framework import status
 from rest_framework.response import Response
@@ -9,9 +9,10 @@ from .serializers import (
 )
 from .services import usuario_service, sendero_service, foto_sendero_service
 from .services import encuesta_service
+from .models import Encuesta, Visitante, RegistroVisita
 
 
-    
+
 class VisitanteViewSet(viewsets.ModelViewSet):
     queryset = Visitante.objects.all()
     serializer_class = VisitanteSerializer
@@ -82,14 +83,32 @@ def login_usuario(request):
 
 @api_view(['POST'])
 def validar_cedula_visitante(request):
-    cedula = request.data.get("cedula")
-
+    cedula = request.data.get('cedula')
     if not cedula:
-        return Response({"detail": "Cédula no proporcionada"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Cédula no proporcionada'}, status=status.HTTP_400_BAD_REQUEST)
 
-    existe = encuesta_service.validar_cedula(cedula)
+    try:
+        visitante = Visitante.objects.get(cedula=cedula)
+        return Response({'mensaje': 'Visitante registrado', 'visitante_id': visitante.id}, status=status.HTTP_200_OK)
+    except Visitante.DoesNotExist:
+        return Response({'error': 'Visitante no registrado'}, status=status.HTTP_404_NOT_FOUND)
 
-    if not existe:
-        return Response({"detail": "Visitante no encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
-    return Response({"detail": "Visitante válido"}, status=status.HTTP_200_OK)
+@api_view(['POST'])
+def guardar_encuesta(request):
+    visita_id = request.data.get('visita_id')  
+    formulario = request.data.get('formulario')
+
+    if not visita_id or not formulario:
+        return Response({'error': 'Datos incompletos'}, status=status.HTTP_400_BAD_REQUEST)
+
+    encuesta, error = encuesta_service.guardar_encuesta(visita_id, formulario)
+
+    if error:
+        if error == 'Registro de visita no encontrado':
+            return Response({'error': error}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': error}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response({'mensaje': 'Encuesta guardada correctamente', 'encuesta_id': encuesta.id}, status=status.HTTP_201_CREATED)
+
+
