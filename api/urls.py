@@ -4,6 +4,12 @@ from .views import (
     VisitanteViewSet, registro_usuario, obtener_usuario, mostrar_sendero, listar_senderos, mostrar_foto_sendero, listar_fotos_senderos
 ,login_usuario
 )
+from .views import (
+    agregar_comentario,
+    comentarios_por_sendero,
+    valoracion_promedio,
+    valoraciones_por_sendero
+)
 
 router = DefaultRouter()
 router.register(r'visitantes', VisitanteViewSet)
@@ -23,4 +29,14 @@ urlpatterns = [
     # Fotos de senderos
     path('foto-sendero/<int:id>/', mostrar_foto_sendero, name='mostrar-foto-sendero'),
     path('fotos-senderos/', listar_fotos_senderos, name='listar-fotos-senderos'),
+
+
+    # Rutas para comentarios
+    path('comentarios/agregar/', agregar_comentario, name='agregar-comentario'),
+    path('comentarios/sendero/<int:sendero_id>/', comentarios_por_sendero, name='comentarios-por-sendero'),
+
+    # Rutas para valoraciones
+    path('valoracion-promedio/<int:sendero_id>/', valoracion_promedio, name='valoracion-promedio'),
+    path('comentarios/<int:sendero_id>/valoraciones/', valoraciones_por_sendero, name='valoraciones-por-sendero'),
+
 ]
