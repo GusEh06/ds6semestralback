@@ -54,7 +54,22 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return instance
 
 
+
 class ComentarioSerializer(serializers.ModelSerializer):
+    usuario_id = serializers.PrimaryKeyRelatedField(
+        source='usuario',
+        queryset=Usuario.objects.all(),
+        write_only=True
+    )
+    usuario = serializers.StringRelatedField(read_only=True)  # Mostrar el usuario como string
+    sendero = serializers.PrimaryKeyRelatedField(queryset=Sendero.objects.all())
+    foto_comentario = serializers.ImageField(required=False, allow_null=True)
+
     class Meta:
         model = Comentario
-        fields = '__all__'
+        fields = ['usuario_id', 'usuario', 'sendero', 'foto_comentario', 'comentario', 'valoracion']
+
+    def validate_valoracion(self, value):
+        if value < 1 or value > 5:
+            raise serializers.ValidationError("La valoración debe estar entre 1 y 5.")
+        return value

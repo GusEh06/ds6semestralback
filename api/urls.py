@@ -7,7 +7,10 @@ from .views import (
     mostrar_foto_sendero, listar_fotos_senderos,
     login_usuario,
     obtener_visitante_por_cedula, registrar_visita,
-    visitas_recientes, visitantes_hoy, encuestas_hoy, visitantes_por_pais, visitantes_por_sendero
+    visitas_recientes, visitantes_hoy, encuestas_hoy, visitantes_por_pais, visitantes_por_sendero, agregar_comentario,
+    comentarios_por_sendero,
+    valoracion_promedio,
+    valoraciones_por_sendero
 )
 from api import views
 
@@ -30,7 +33,13 @@ urlpatterns = [
     path('foto-sendero/<int:id>/', mostrar_foto_sendero, name='mostrar-foto-sendero'),
     path('fotos-senderos/', listar_fotos_senderos, name='listar-fotos-senderos'),
 
+    # Rutas para comentarios
+    path('comentarios/agregar/', agregar_comentario, name='agregar-comentario'),
+    path('comentarios/sendero/<int:sendero_id>/', comentarios_por_sendero, name='comentarios-por-sendero'),
 
+    # Rutas para valoraciones
+    path('valoracion-promedio/<int:sendero_id>/', valoracion_promedio, name='valoracion-promedio'),
+    path('comentarios/<int:sendero_id>/valoraciones/', valoraciones_por_sendero, name='valoraciones-por-sendero'),
     # Visitantes
     path('visitante/cedula/<str:cedula>/', obtener_visitante_por_cedula, name='visitante-por-cedula'),
 
