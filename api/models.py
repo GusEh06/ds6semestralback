@@ -3,6 +3,7 @@ from cryptography.fernet import Fernet
 from decouple import config
 
 
+
 # ==============================
 # Clave de encriptación desde .env
 # ==============================
@@ -78,10 +79,12 @@ class SenderoFoto(models.Model):
 
 
 class RegistroVisita(models.Model):
+
     visitante = models.ForeignKey(Visitante, on_delete=models.CASCADE)
     razon_visita = models.TextField()
     sendero_visitado = models.TextField()
     fecha_visita = models.DateTimeField(auto_now_add=True)
+    hora_visita = models.TimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Visita de {self.visitante.nombre_visitante} a {self.sendero_visitado}"

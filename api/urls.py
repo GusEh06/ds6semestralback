@@ -4,6 +4,9 @@ from .views import (
     VisitanteViewSet, registro_usuario, obtener_usuario, mostrar_sendero, listar_senderos, mostrar_foto_sendero, listar_fotos_senderos
 ,login_usuario
 )
+from django.urls import path
+from . import views
+
 
 router = DefaultRouter()
 router.register(r'visitantes', VisitanteViewSet)
@@ -23,4 +26,10 @@ urlpatterns = [
     # Fotos de senderos
     path('foto-sendero/<int:id>/', mostrar_foto_sendero, name='mostrar-foto-sendero'),
     path('fotos-senderos/', listar_fotos_senderos, name='listar-fotos-senderos'),
+
+    #Visitantes
+    path('registrar_visitante_y_visita/', views.registrar_visitante_y_visita, name='registrar_visitante_y_visita'),
+    path('registrar_visita_existente/', views.registrar_visita_existente, name='registrar_visita_existente'),
+    path('visitante_por_cedula/', views.obtener_nombre_visitante, name='visitante_por_cedula'),
+    path('senderos/', views.listar_senderos, name='listar_senderos'),
 ]

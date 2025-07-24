@@ -1,12 +1,10 @@
 from rest_framework import viewsets
-from .models import Visitante
-from .serializers import VisitanteSerializer
+from .models import RegistroVisita, Sendero, Visitante
+from .serializers import RegistroVisitaSerializer, VisitanteSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import (
-    UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer
-)
+from .serializers import UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer
 from .services import usuario_service, sendero_service, foto_sendero_service
 
 
@@ -66,6 +64,7 @@ def listar_fotos_senderos(request):
     return Response(serializer.data)
 
 
+
 @api_view(['POST'])
 def login_usuario(request):
     email = request.data.get("email")
@@ -77,3 +76,67 @@ def login_usuario(request):
         return Response({"detail": error}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response(datos, status=status.HTTP_200_OK)
+
+
+
+# ==============================
+# RELEZ
+# ==============================
+
+@api_view(['POST'])
+def registrar_visitante_y_visita(request):
+    #Recibe los datos personales del visitante y los datos de la visita en un solo JSON.
+    #Crea primero al visitante y luego el registro de la visita asociado.
+
+    visitante_data = request.data.get('visitante')
+    visita_data = request.data.get('visita')
+
+    visitante_serializer = VisitanteSerializer(data=visitante_data)
+    if visitante_serializer.is_valid():
+        visitante = visitante_serializer.save()
+        visita_data['visitante'] = visitante.id
+        visita_serializer = RegistroVisitaSerializer(data=visita_data)
+        if visita_serializer.is_valid():
+            visita_serializer.save()
+            return Response({'mensaje': 'Visitante y visita registrada'}, status=201)
+        return Response(visita_serializer.errors, status=400)
+    return Response(visitante_serializer.errors, status=400)
+
+
+@api_view(['POST'])
+def registrar_visita_existente(request):
+    #Busca un visitante por cédula y registra una nueva visita para él.
+
+    cedula = request.data.get('cedula')
+    motivo = request.data.get('motivo')
+    sendero_id = request.data.get('sendero')
+    try:
+        visitante = Visitante.objects.get(cedula=cedula)
+        visita = RegistroVisita.objects.create(visitante=visitante, motivo=motivo, sendero_id=sendero_id)
+        return Response({'mensaje': 'Visita registrada con éxito'}, status=201)
+    except Visitante.DoesNotExist:
+        return Response({'error': 'Visitante no encontrado'}, status=404)
+
+
+@api_view(['GET'])
+def obtener_nombre_visitante(request):
+    #Recibe una cédula por parámetro GET y retorna el nombre del visitante si existe.
+    
+    cedula = request.GET.get('cedula')
+    try:
+        visitante = Visitante.objects.get(cedula=cedula)
+        return Response({'nombre': visitante.nombre})
+    except Visitante.DoesNotExist:
+        return Response({'error': 'Visitante no encontrado'}, status=404)
+    
+
+
+    
+@api_view(['GET'])
+def listar_senderos(request):
+    #Devuelve una lista con todos los senderos disponibles (id y nombre).
+
+    senderos = Sendero.objects.all()
+    data = [{'id': s.id, 'nombre': s.nombre} for s in senderos]
+    return Response(data)
+
