@@ -49,7 +49,7 @@ class CampoEncriptado(models.TextField):
 # ==============================
 
 class Visitante(models.Model):
-    cedula_pasaporte = CampoEncriptado(max_length=255)
+    cedula_pasaporte = models.CharField(max_length=255, unique=True)
     nombre_visitante = CampoEncriptado(max_length=255)
     nacionalidad = CampoEncriptado(max_length=255)
     adulto_nino = models.CharField(max_length=255)
