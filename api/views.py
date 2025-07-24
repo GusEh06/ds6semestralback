@@ -1,13 +1,11 @@
 from rest_framework import viewsets
-from .models import Visitante
+from .models import Visitante, RegistroVisita, Sendero
 from .serializers import VisitanteSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import (UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer)
-from .services import usuario_service, sendero_service, foto_sendero_service
-from .serializers import VisitanteSerializer
-from .models import Visitante, RegistroVisita, Sendero
+from .serializers import (UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer, VisitanteSerializer)
+from .services import usuario_service, sendero_service, foto_sendero_service, dashboard_service
 
     
 class VisitanteViewSet(viewsets.ModelViewSet):
@@ -189,4 +187,82 @@ def registrar_visita_por_id(request):
     return Response({"mensaje": "Visita registrada correctamente."}, status=201)
 
 
+# ==============================
+# Dashboard Endpoints
+# ==============================
+
+@api_view(['GET'])
+def visitas_recientes(request):
+    """
+    Obtiene las visitas recientes con toda la información necesaria.
+    Retorna: Fecha, Nombre, Adulto, Niño, Nacionalidad, Motivo de Visita, Sendero, Hora de Entrada, Teléfono
+    """
+    try:
+        visitas = dashboard_service.obtener_visitas_recientes()
+        return Response(visitas, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al obtener visitas recientes", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def visitantes_hoy(request):
+    """
+    Retorna el conteo de visitantes de hoy.
+    """
+    try:
+        count = dashboard_service.contar_visitantes_hoy()
+        return Response({"visitantes_hoy": count}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al contar visitantes de hoy", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def encuestas_hoy(request):
+    """
+    Retorna el conteo de encuestas llenadas hoy.
+    """
+    try:
+        count = dashboard_service.contar_encuestas_hoy()
+        return Response({"encuestas_hoy": count}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al contar encuestas de hoy", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def visitantes_por_pais(request):
+    """
+    Retorna el conteo de visitantes agrupados por país/nacionalidad.
+    """
+    try:
+        datos = dashboard_service.obtener_visitantes_por_pais()
+        return Response(datos, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al obtener visitantes por país", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def visitantes_por_sendero(request):
+    """
+    Retorna el conteo de visitantes agrupados por sendero.
+    """
+    try:
+        datos = dashboard_service.obtener_visitantes_por_sendero()
+        return Response(datos, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al obtener visitantes por sendero", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
