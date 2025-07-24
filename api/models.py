@@ -1,7 +1,6 @@
 from django.db import models
 from cryptography.fernet import Fernet
 from decouple import config
-from django.contrib.auth.hashers import make_password, check_password
 
 
 # ==============================
@@ -101,21 +100,13 @@ class Usuario(models.Model):
         ADMIN = "admin", "Administrador"
         USER = "user", "Usuario"
 
-    email = CampoEncriptado(max_length=255)
+    email = models.EmailField(unique=True)  # campo normal, no encriptado porque rompe el rendimiento,
+                                            # no escala con muchos usuarios, requiere cargar toda la tabla
+                                            # para verificar usuarios en el login.
     nombre = CampoEncriptado(max_length=255)
     apellido = CampoEncriptado(max_length=255)
     contraseña = models.CharField(max_length=255)  # Se almacena hasheada
     rol = models.CharField(max_length=5, choices=Rol.choices, default=Rol.USER)
-
-    def save(self, *args, **kwargs):
-        # Hashear contraseña solo si es nueva o modificada
-        if not self.pk or 'contraseña' in self.get_dirty_fields():
-            self.contraseña = make_password(self.contraseña)
-        super().save(*args, **kwargs)
-
-    def verificar_contraseña(self, contraseña_plana):
-        """Verifica si la contraseña ingresada coincide con el hash"""
-        return check_password(contraseña_plana, self.contraseña)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"

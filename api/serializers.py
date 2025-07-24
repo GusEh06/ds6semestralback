@@ -39,13 +39,13 @@ class EncuestaSerializer(serializers.ModelSerializer):
 
 class UsuarioSerializer(serializers.ModelSerializer):
     rol = serializers.ChoiceField(choices=Usuario.Rol.choices, default=Usuario.Rol.USER)
+    contraseña = serializers.CharField(write_only=True)
 
     class Meta:
         model = Usuario
-        exclude = ['contraseña']  
+        fields = ['id', 'email', 'nombre', 'apellido', 'contraseña', 'rol']
 
     def create(self, validated_data):
-        """Hashear contraseña manualmente al crear usuario"""
         contraseña = validated_data.pop('contraseña', None)
         instance = Usuario(**validated_data)
         if contraseña is not None:

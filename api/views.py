@@ -9,6 +9,7 @@ from .serializers import (
 )
 from .services import usuario_service, sendero_service, foto_sendero_service
 
+
     
 class VisitanteViewSet(viewsets.ModelViewSet):
     queryset = Visitante.objects.all()
@@ -63,3 +64,16 @@ def listar_fotos_senderos(request):
     fotos = foto_sendero_service.obtener_todas_fotos_sendero()
     serializer = SenderoFotoSerializer(fotos, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def login_usuario(request):
+    email = request.data.get("email")
+    contraseña = request.data.get("contraseña")
+
+    datos, error = usuario_service.autenticar_usuario(email, contraseña)
+
+    if error:
+        return Response({"detail": error}, status=status.HTTP_401_UNAUTHORIZED)
+
+    return Response(datos, status=status.HTTP_200_OK)
