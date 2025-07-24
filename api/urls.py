@@ -4,6 +4,7 @@ from .views import (
     VisitanteViewSet, registro_usuario, obtener_usuario, mostrar_sendero, listar_senderos, mostrar_foto_sendero, listar_fotos_senderos
 ,login_usuario
 )
+from .views import validar_cedula_visitante
 
 router = DefaultRouter()
 router.register(r'visitantes', VisitanteViewSet)
@@ -23,4 +24,6 @@ urlpatterns = [
     # Fotos de senderos
     path('foto-sendero/<int:id>/', mostrar_foto_sendero, name='mostrar-foto-sendero'),
     path('fotos-senderos/', listar_fotos_senderos, name='listar-fotos-senderos'),
+    #validar ID
+    path('validar-cedula/', validar_cedula_visitante, name='validar-cedula-visitante'),
 ]

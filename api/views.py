@@ -8,6 +8,7 @@ from .serializers import (
     UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer
 )
 from .services import usuario_service, sendero_service, foto_sendero_service
+from .services import encuesta_service
 
 
     
@@ -77,3 +78,18 @@ def login_usuario(request):
         return Response({"detail": error}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response(datos, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def validar_cedula_visitante(request):
+    cedula = request.data.get("cedula")
+
+    if not cedula:
+        return Response({"detail": "Cédula no proporcionada"}, status=status.HTTP_400_BAD_REQUEST)
+
+    existe = encuesta_service.validar_cedula(cedula)
+
+    if not existe:
+        return Response({"detail": "Visitante no encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response({"detail": "Visitante válido"}, status=status.HTTP_200_OK)
