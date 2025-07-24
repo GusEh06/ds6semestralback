@@ -49,7 +49,7 @@ class CampoEncriptado(models.TextField):
 # ==============================
 
 class Visitante(models.Model):
-    cedula_pasaporte = CampoEncriptado(max_length=255)
+    cedula_pasaporte = models.CharField(max_length=255, unique=True)
     nombre_visitante = CampoEncriptado(max_length=255)
     nacionalidad = CampoEncriptado(max_length=255)
     adulto_nino = models.CharField(max_length=255)
@@ -82,6 +82,7 @@ class RegistroVisita(models.Model):
     razon_visita = models.TextField()
     sendero_visitado = models.TextField()
     fecha_visita = models.DateTimeField(auto_now_add=True)
+    hora_entrada = models.TimeField(auto_now_add=True)  # Nueva columna añadida
 
     def __str__(self):
         return f"Visita de {self.visitante.nombre_visitante} a {self.sendero_visitado}"

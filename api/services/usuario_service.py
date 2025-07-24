@@ -23,7 +23,7 @@ def registrar_usuario(data):
     )
     usuario.save()
     return usuario
-
+    
 
 def obtener_usuario(id_usuario):
     """

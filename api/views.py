@@ -1,16 +1,12 @@
 from rest_framework import viewsets
-from .models import Visitante, Usuario
-from .serializers import VisitanteSerializer, ComentarioSerializer
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from .serializers import (
-    UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer
-)
-from .services import usuario_service, sendero_service, foto_sendero_service, comentario_service, valoracion_service
+from rest_framework.decorators import api_view
 
+from .models import Visitante, RegistroVisita, Sendero
+from .serializers import (UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer, VisitanteSerializer, ComentarioSerializer)
+from .services import usuario_service, sendero_service, foto_sendero_service, dashboard_service, comentario_service, valoracion_service
 
     
 class VisitanteViewSet(viewsets.ModelViewSet):
@@ -82,6 +78,7 @@ def login_usuario(request):
 
 
 
+
 #endpoints de comentarios(Javier)
 @api_view(['POST'])
 def agregar_comentario(request):
@@ -111,4 +108,195 @@ def valoracion_promedio(request, sendero_id):
 def valoraciones_por_sendero(request, sendero_id):
     data = valoracion_service.obtener_valoraciones_por_sendero(sendero_id)
     return Response(data)
+
+# ==============================
+# RELEZ
+# ==============================
+
+@api_view(['GET'])
+def obtener_visitante_por_cedula(request, cedula):
+    visitante = Visitante.objects.filter(cedula_pasaporte=cedula).first()
+    if visitante:
+        serializer = VisitanteSerializer(visitante)
+        return Response(serializer.data)
+    return Response({"detail": "Visitante no encontrado."}, status=404)
+
+
+@api_view(['POST'])
+def registrar_visita(request):
+    cedula = request.data.get("cedula_pasaporte")
+    sendero_nombre = request.data.get("sendero_visitado")
+    razon = request.data.get("razon_visita")
+
+    if not cedula or not sendero_nombre or not razon:
+        return Response({"detail": "Faltan datos requeridos."}, status=400)
+
+    visitante = Visitante.objects.filter(cedula_pasaporte=cedula).first()
+    if not visitante:
+        return Response({"detail": "Visitante no encontrado."}, status=404)
+
+    # ✅ Verificar que el sendero exista
+    sendero = Sendero.objects.filter(nombre_sendero=sendero_nombre).first()
+    if not sendero:
+        return Response({"detail": "El sendero no existe."}, status=400)
+
+    # Ahora sí guardar
+    visita = RegistroVisita.objects.create(
+        visitante=visitante,
+        sendero_visitado=sendero.nombre_sendero,
+        razon_visita=razon
+    )
+
+    return Response({"mensaje": "Visita registrada correctamente."}, status=201)
+
+
+
+@api_view(['POST'])
+def registrar_visitante_y_visita(request):
+    data = request.data
+
+    campos_obligatorios = [
+        "cedula_pasaporte", "nombre_visitante", "nacionalidad", "adulto_nino",
+        "telefono", "genero", "sendero_visitado", "razon_visita"
+    ]
+
+    # Validar campos vacíos
+    for campo in campos_obligatorios:
+        if campo not in data or not data[campo]:
+            return Response({"detail": f"Campo '{campo}' es requerido."}, status=400)
+
+    # Verificar que el sendero exista
+    sendero_nombre = data["sendero_visitado"]
+    sendero = Sendero.objects.filter(nombre_sendero=sendero_nombre).first()
+    if not sendero:
+        return Response({"detail": "El sendero no existe."}, status=400)
+
+    # Validar si ya existe el visitante
+    if Visitante.objects.filter(cedula_pasaporte=data["cedula_pasaporte"]).exists():
+        return Response({"detail": "El visitante ya está registrado."}, status=400)
+
+    # Crear visitante
+    visitante = Visitante.objects.create(
+        cedula_pasaporte=data["cedula_pasaporte"],
+        nombre_visitante=data["nombre_visitante"],
+        nacionalidad=data["nacionalidad"],
+        adulto_nino=data["adulto_nino"],
+        telefono=data["telefono"],
+        genero=data["genero"]
+    )
+
+    # Crear visita asociada
+    RegistroVisita.objects.create(
+        visitante=visitante,
+        sendero_visitado=sendero.nombre_sendero,
+        razon_visita=data["razon_visita"]
+    )
+
+    return Response({"mensaje": "Visitante y visita registrados correctamente."}, status=201)
+
+@api_view(['POST'])
+def registrar_visita_por_id(request):
+    visitante_id = request.data.get("visitante_id")
+    sendero_nombre = request.data.get("sendero_visitado")
+    razon = request.data.get("razon_visita")
+
+    if not visitante_id or not sendero_nombre or not razon:
+        return Response({"detail": "Faltan datos requeridos."}, status=400)
+
+    try:
+        visitante = Visitante.objects.get(id=visitante_id)
+    except Visitante.DoesNotExist:
+        return Response({"detail": "Visitante no encontrado."}, status=404)
+
+    sendero = Sendero.objects.filter(nombre_sendero=sendero_nombre).first()
+    if not sendero:
+        return Response({"detail": "El sendero no existe."}, status=400)
+
+    RegistroVisita.objects.create(
+        visitante=visitante,
+        sendero_visitado=sendero.nombre_sendero,
+        razon_visita=razon
+    )
+
+    return Response({"mensaje": "Visita registrada correctamente."}, status=201)
+
+
+# ==============================
+# Dashboard Endpoints
+# ==============================
+
+@api_view(['GET'])
+def visitas_recientes(request):
+    """
+    Obtiene las visitas recientes con toda la información necesaria.
+    Retorna: Fecha, Nombre, Adulto, Niño, Nacionalidad, Motivo de Visita, Sendero, Hora de Entrada, Teléfono
+    """
+    try:
+        visitas = dashboard_service.obtener_visitas_recientes()
+        return Response(visitas, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al obtener visitas recientes", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def visitantes_hoy(request):
+    """
+    Retorna el conteo de visitantes de hoy.
+    """
+    try:
+        count = dashboard_service.contar_visitantes_hoy()
+        return Response({"visitantes_hoy": count}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al contar visitantes de hoy", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def encuestas_hoy(request):
+    """
+    Retorna el conteo de encuestas llenadas hoy.
+    """
+    try:
+        count = dashboard_service.contar_encuestas_hoy()
+        return Response({"encuestas_hoy": count}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al contar encuestas de hoy", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def visitantes_por_pais(request):
+    """
+    Retorna el conteo de visitantes agrupados por país/nacionalidad.
+    """
+    try:
+        datos = dashboard_service.obtener_visitantes_por_pais()
+        return Response(datos, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al obtener visitantes por país", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def visitantes_por_sendero(request):
+    """
+    Retorna el conteo de visitantes agrupados por sendero.
+    """
+    try:
+        datos = dashboard_service.obtener_visitantes_por_sendero()
+        return Response(datos, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"error": "Error al obtener visitantes por sendero", "detalle": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
