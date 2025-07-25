@@ -6,24 +6,20 @@
 
 **POST** `/api/registrar_visitante_y_visita/`
 
-Permite registrar a un visitante nuevo en el sistema junto con su primera visita. Los datos sensibles del visitante (nombre, cédula, teléfono, etc.) se guardan encriptados.
+Registra un nuevo visitante junto con su primera visita al parque. Los datos sensibles del visitante se guardan cifrados.
 
 #### Cuerpo de Petición (JSON)
 
 ```json
 {
-  "visitante": {
-    "cedula_pasaporte": "A123456789",
-    "nombre_visitante": "Ana Ruiz",
-    "nacionalidad": "Panameña",
-    "adulto_nino": "Adulto",
-    "telefono": "60000000",
-    "genero": "Femenino"
-  },
-  "visita": {
-    "motivo": "Turismo ecológico",
-    "sendero": 1
-  }
+  "cedula_pasaporte": "A123456789",
+  "nombre_visitante": "Ana Ruiz",
+  "nacionalidad": "Panameña",
+  "adulto_nino": "Adulto",
+  "telefono": "60000000",
+  "genero": "Femenino",
+  "razon_visita": "Turismo ecológico",
+  "sendero_visitado": "Sendero Las Cruces"
 }
 ```
 
@@ -31,16 +27,7 @@ Permite registrar a un visitante nuevo en el sistema junto con su primera visita
 
 ```json
 {
-  "mensaje": "Visitante y visita registrados exitosamente"
-}
-```
-
-#### Errores Comunes
-
-```json
-{
-  "error": "Faltan campos obligatorios",
-  "detalle": "No se proporcionó el campo 'telefono'"
+  "mensaje": "Visitante y visita registrados correctamente."
 }
 ```
 
@@ -48,17 +35,17 @@ Permite registrar a un visitante nuevo en el sistema junto con su primera visita
 
 ### 2. Registrar Visita para Visitante Existente
 
-**POST** `/api/registrar_visita_existente/`
+**POST** `/api/registrar-visita/`
 
-Registra una nueva visita de un visitante ya existente (identificado por su cédula o pasaporte).
+Registra una nueva visita para un visitante previamente registrado en el sistema.
 
 #### Cuerpo de Petición (JSON)
 
 ```json
 {
-  "cedula": "A123456789",
-  "motivo": "Educativo",
-  "sendero": 1
+  "cedula_pasaporte": "A123456789",
+  "razon_visita": "Educativo",
+  "sendero_visitado": "Sendero El Charco"
 }
 ```
 
@@ -66,77 +53,74 @@ Registra una nueva visita de un visitante ya existente (identificado por su céd
 
 ```json
 {
-  "mensaje": "Visita registrada exitosamente"
-}
-```
-
-#### Errores Comunes
-
-```json
-{
-  "error": "Visitante no encontrado"
-}
-```
-
-```json
-{
-  "error": "Token de desencriptación inválido",
-  "detalle": "La clave de encriptación configurada no coincide con los datos existentes"
+  "mensaje": "Visita registrada correctamente."
 }
 ```
 
 ---
 
-### 3. Consultar Nombre del Visitante
+### 3. Registrar Visita por ID de Visitante
 
-**GET** `/api/obtener_nombre_visitante/?cedula=A123456789`
+**POST** `/api/registrar-visita-id/`
 
-Retorna el nombre desencriptado del visitante correspondiente a la cédula proporcionada.
+Registra una visita utilizando el `id` interno del visitante en la base de datos.
 
-#### Respuesta Exitosa (200 OK)
+#### Cuerpo de Petición (JSON)
 
 ```json
 {
-  "nombre": "Ana Ruiz"
+  "visitante_id": 3,
+  "razon_visita": "Investigación científica",
+  "sendero_visitado": "Sendero Mirador"
 }
 ```
 
-#### Respuesta de Error (404)
+#### Respuesta Exitosa (201 Created)
 
 ```json
 {
-  "error": "Visitante no encontrado"
+  "mensaje": "Visita registrada correctamente."
 }
 ```
 
 ---
 
-### 4. Listar Senderos Disponibles
+### 4. Consultar Nombre del Visitante
 
-**GET** `/api/listar_senderos_simplificado/`
+**GET** `/api/visitante/cedula/A123456789/`
 
-Retorna una lista de senderos activos con su `id` y `nombre` para ser usados en el frontend (combobox, select, etc.).
+Devuelve el visitante completo correspondiente a la cédula proporcionada.
 
 #### Respuesta Exitosa (200 OK)
 
 ```json
-[
-  { "id": 1, "nombre": "Sendero Las Cruces" },
-  { "id": 2, "nombre": "Sendero El Charco" }
-]
+{
+  "id": 3,
+  "cedula_pasaporte": "A123456789",
+  "nombre_visitante": "Ana Ruiz",
+  "nacionalidad": "Panameña",
+  "adulto_nino": "Adulto",
+  "telefono": "60000000",
+  "genero": "Femenino"
+}
 ```
 
 ---
 
 ## 🔧 Notas Técnicas Importantes
 
-- Los campos sensibles se guardan cifrados con Fernet y clave en `.env`
-- `fecha_visita` se registra automáticamente con `auto_now_add=True`
-- El sistema soporta visitas múltiples para un mismo visitante
-- Todos los errores tienen formato estandarizado con `error` y `detalle`
+- Los campos sensibles como nombre, cédula, nacionalidad y teléfono se almacenan cifrados usando Fernet.
+- `fecha_visita` y `hora_entrada` se generan automáticamente.
+- El sistema permite múltiples visitas por visitante.
+- Todos los errores siguen la estructura estándar:
+
+```json
+{
+  "detail": "Descripción del error"
+}
+```
 
 ---
 
-**Última actualización:** Julio 2025\
-**Versión:** 1.0
-
+**Última actualización:** Julio 2025  
+**Versión:** 1.1
