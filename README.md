@@ -73,6 +73,14 @@ GET /api/dashboard/visitantes-por-pais/   # Estadísticas geográficas
 GET /api/dashboard/visitantes-por-sendero/ # Popularidad de rutas
 ```
 
+### 📊 Registro-Visitante (Registrar visitas y Obtener visita mediante cedula)
+```
+POST /api/registrar_visitante_y_visita/   # Registra un visitante nuevo junto a su primera visita
+POST /api/registrar-visita/               # Registra una visita de un visitante existente
+POST /api/registrar-visita-id/            # Registra una visita por ID de visitante
+GET  /api/visitante/cedula/<cedula>/      # Consulta un visitante por su cédula/pasaporte
+```
+
 ---
 **Última actualización:** Julio 2025  
 **Versión:** 1.0.
