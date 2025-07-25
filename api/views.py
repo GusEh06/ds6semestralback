@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 
 from .models import Visitante, RegistroVisita, Sendero
 from .serializers import (UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer, VisitanteSerializer, ComentarioSerializer)
-from .services import usuario_service, sendero_service, foto_sendero_service, dashboard_service, comentario_service, valoracion_service
+from .services import usuario_service, sendero_service, foto_sendero_service, dashboard_service, comentario_service, valoracion_service, encuesta_service
 
     
 class VisitanteViewSet(viewsets.ModelViewSet):
@@ -76,6 +76,15 @@ def login_usuario(request):
     return Response(datos, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def registrar_encuesta_view(request):
+    data = request.data
+    encuesta, error = encuesta_service.registrar_encuesta(data)
+
+    if error:
+        return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({'mensaje': 'Encuesta registrada correctamente'}, status=status.HTTP_201_CREATED)
 
 
 
