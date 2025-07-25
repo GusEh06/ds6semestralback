@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import (UsuarioSerializer, SenderoSerializer, SenderoFotoSerializer, VisitanteSerializer)
 from .services import usuario_service, sendero_service, foto_sendero_service, dashboard_service
+from .services import registro_visita_service
+
 
     
 class VisitanteViewSet(viewsets.ModelViewSet):
@@ -81,110 +83,37 @@ def login_usuario(request):
 
 @api_view(['GET'])
 def obtener_visitante_por_cedula(request, cedula):
-    visitante = Visitante.objects.filter(cedula_pasaporte=cedula).first()
-    if visitante:
-        serializer = VisitanteSerializer(visitante)
-        return Response(serializer.data)
-    return Response({"detail": "Visitante no encontrado."}, status=404)
+    visitante = registro_visita_service.obtener_visitante_por_cedula(cedula)
+    serializer = VisitanteSerializer(visitante)
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
 def registrar_visita(request):
-    cedula = request.data.get("cedula_pasaporte")
-    sendero_nombre = request.data.get("sendero_visitado")
-    razon = request.data.get("razon_visita")
-
-    if not cedula or not sendero_nombre or not razon:
-        return Response({"detail": "Faltan datos requeridos."}, status=400)
-
-    visitante = Visitante.objects.filter(cedula_pasaporte=cedula).first()
-    if not visitante:
-        return Response({"detail": "Visitante no encontrado."}, status=404)
-
-    # ✅ Verificar que el sendero exista
-    sendero = Sendero.objects.filter(nombre_sendero=sendero_nombre).first()
-    if not sendero:
-        return Response({"detail": "El sendero no existe."}, status=400)
-
-    # Ahora sí guardar
-    visita = RegistroVisita.objects.create(
-        visitante=visitante,
-        sendero_visitado=sendero.nombre_sendero,
-        razon_visita=razon
+    data = request.data
+    resultado = registro_visita_service.registrar_visita(
+        data.get("cedula_pasaporte"),
+        data.get("sendero_visitado"),
+        data.get("razon_visita")
     )
-
-    return Response({"mensaje": "Visita registrada correctamente."}, status=201)
-
+    return Response(resultado, status=201)
 
 
 @api_view(['POST'])
 def registrar_visitante_y_visita(request):
-    data = request.data
+    resultado = registro_visita_service.registrar_visitante_y_visita(request.data)
+    return Response(resultado, status=201)
 
-    campos_obligatorios = [
-        "cedula_pasaporte", "nombre_visitante", "nacionalidad", "adulto_nino",
-        "telefono", "genero", "sendero_visitado", "razon_visita"
-    ]
-
-    # Validar campos vacíos
-    for campo in campos_obligatorios:
-        if campo not in data or not data[campo]:
-            return Response({"detail": f"Campo '{campo}' es requerido."}, status=400)
-
-    # Verificar que el sendero exista
-    sendero_nombre = data["sendero_visitado"]
-    sendero = Sendero.objects.filter(nombre_sendero=sendero_nombre).first()
-    if not sendero:
-        return Response({"detail": "El sendero no existe."}, status=400)
-
-    # Validar si ya existe el visitante
-    if Visitante.objects.filter(cedula_pasaporte=data["cedula_pasaporte"]).exists():
-        return Response({"detail": "El visitante ya está registrado."}, status=400)
-
-    # Crear visitante
-    visitante = Visitante.objects.create(
-        cedula_pasaporte=data["cedula_pasaporte"],
-        nombre_visitante=data["nombre_visitante"],
-        nacionalidad=data["nacionalidad"],
-        adulto_nino=data["adulto_nino"],
-        telefono=data["telefono"],
-        genero=data["genero"]
-    )
-
-    # Crear visita asociada
-    RegistroVisita.objects.create(
-        visitante=visitante,
-        sendero_visitado=sendero.nombre_sendero,
-        razon_visita=data["razon_visita"]
-    )
-
-    return Response({"mensaje": "Visitante y visita registrados correctamente."}, status=201)
 
 @api_view(['POST'])
 def registrar_visita_por_id(request):
-    visitante_id = request.data.get("visitante_id")
-    sendero_nombre = request.data.get("sendero_visitado")
-    razon = request.data.get("razon_visita")
-
-    if not visitante_id or not sendero_nombre or not razon:
-        return Response({"detail": "Faltan datos requeridos."}, status=400)
-
-    try:
-        visitante = Visitante.objects.get(id=visitante_id)
-    except Visitante.DoesNotExist:
-        return Response({"detail": "Visitante no encontrado."}, status=404)
-
-    sendero = Sendero.objects.filter(nombre_sendero=sendero_nombre).first()
-    if not sendero:
-        return Response({"detail": "El sendero no existe."}, status=400)
-
-    RegistroVisita.objects.create(
-        visitante=visitante,
-        sendero_visitado=sendero.nombre_sendero,
-        razon_visita=razon
+    data = request.data
+    resultado = registro_visita_service.registrar_visita_por_id(
+        data.get("visitante_id"),
+        data.get("sendero_visitado"),
+        data.get("razon_visita")
     )
-
-    return Response({"mensaje": "Visita registrada correctamente."}, status=201)
+    return Response(resultado, status=201)
 
 
 # ==============================

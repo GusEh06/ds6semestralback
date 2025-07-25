@@ -9,6 +9,7 @@ from .views import (
     obtener_visitante_por_cedula, registrar_visita,
     visitas_recientes, visitantes_hoy, encuestas_hoy, visitantes_por_pais, visitantes_por_sendero
 )
+from .views import registrar_visita
 from api import views
 
 router = DefaultRouter()
@@ -37,10 +38,13 @@ urlpatterns = [
     # Registro de visita
     path('registro-visita/', registrar_visita, name='registro-visita'),
     path('registrar-visita-id/', views.registrar_visita_por_id, name='registrar-visita-id'),
-
+    path('registrar_visitante_y_visita/', views.registrar_visitante_y_visita, name='registrar_visitante_y_visita'),
+    
+    
     # Dashboard endpoints
     path('dashboard/visitas-recientes/', visitas_recientes, name='visitas-recientes'),
     path('dashboard/visitantes-hoy/', visitantes_hoy, name='visitantes-hoy'),
     path('dashboard/encuestas-hoy/', encuestas_hoy, name='encuestas-hoy'),
     path('dashboard/visitantes-por-pais/', visitantes_por_pais, name='visitantes-por-pais'),
     path('dashboard/visitantes-por-sendero/', visitantes_por_sendero, name='visitantes-por-sendero'),
+]
