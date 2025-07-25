@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')  # Lee la clave desde .env
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)  # Lee DEBUG desde .env
 
-ALLOWED_HOST = os.envieron.get("ALLOWED_HOST", "*").split(",")
+ALLOWED_HOST = os.environ.get("ALLOWED_HOST", "*").split(",")
 
 
 # Application definition
