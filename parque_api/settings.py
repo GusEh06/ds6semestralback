@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config  # Importa python-decouple
+from decouple import config, Csv # Importa python-decouple y csv
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')  # Lee la clave desde .env
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)  # Lee DEBUG desde .env
 
-ALLOWED_HOSTS = []
+ALLOWED_HOST = os.envieron.get("ALLOWED_HOST", "*").split(",")
 
 
 # Application definition
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'parque_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Cambia a MySQL
+        'ENGINE': 'mysql.connector.django',  # Cambia a MySQL
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
