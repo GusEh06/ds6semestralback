@@ -84,7 +84,6 @@ POST /api/registrar-visita-id/            # Registra una visita por ID de visita
 GET  /api/visitante/cedula/<cedula>/      # Consulta un visitante por su cédula/pasaporte
 ```
 
-## 🌐 API Endpoints
 
 ### 👤 Usuarios
 
