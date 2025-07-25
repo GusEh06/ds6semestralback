@@ -59,7 +59,7 @@ proyecto-api/
 | Sección | Descripción | Enlace |
 |---------|-------------|--------|
 | 📊 **Dashboard API** | Endpoints para estadísticas y reportes | [📄 Dashboard](docs/dashboard.md) |
-
+| 📊 **Registro-Visita API** | Endpoints para visitantes y registro de visitantes | [📄 RegistroVisitante](docs/registro_visita.md) |
 
 ---
 ## 🌐 API Endpoints
