@@ -75,4 +75,4 @@ GET /api/dashboard/visitantes-por-sendero/ # Popularidad de rutas
 
 ---
 **Última actualización:** Julio 2025  
-**Versión:** 1.0
+**Versión:** 1.0.
