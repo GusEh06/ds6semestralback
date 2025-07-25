@@ -63,6 +63,8 @@ proyecto-api/
 | 👤 **Usuarios API** | Endpoints para Registro, autenticación y consulta de usuarios | [📄 Usuarios](docs/usuarios.md) |
 | 🏞️ **Senderos API** | Endpoints para Información de senderos | [📄 Senderos](docs/senderos.md) |
 | 📋 **Encuestas API** | Endpoints para Registro de encuestas asociadas a visitas | [📄 Encuestas](docs/encuestas.md) |
+| 📝 **Comentarios API** | Endpoints para Agregar y listar comentarios (por sendero) | [📄 Comentarios](docs/comentarios.md) |
+| ⭐ **Valoraciones API** | Endpoints para Obtener valoraciones promedio de un sendero | [📄 Valoraciones](docs/valoraciones.md) |
 
 ---
 ## 🌐 API Endpoints
@@ -106,6 +108,17 @@ GET /api/senderos/             # Listar todos los senderos registrados
 POST /api/encuestas/registrar/  # Registrar una encuesta asociada a una visita
 ```
 
+### 📝 Comentarios
+```
+POST /api/comentarios/agregar/                         # Agrega un comentario a un sendero (con o sin imagen)
+GET  /api/comentarios/sendero/<sendero_id>/            # Lista todos los comentarios de un sendero
+```
+
+### ⭐ Valoraciones
+```
+GET  /api/valoracion-promedio/<sendero_id>/            # Obtiene la valoración promedio de un sendero
+GET  /api/comentarios/<sendero_id>/valoraciones/       # Obtiene la distribución de valoraciones (1 a 5 estrellas) de un sendero
+```
 ---
 **Última actualización:** Julio 2025  
 **Versión:** 1.0.
