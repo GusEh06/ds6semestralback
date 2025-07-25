@@ -10,7 +10,8 @@ from .views import (
     visitas_recientes, visitantes_hoy, encuestas_hoy, visitantes_por_pais, visitantes_por_sendero, agregar_comentario,
     comentarios_por_sendero,
     valoracion_promedio,
-    valoraciones_por_sendero
+    valoraciones_por_sendero,
+    registrar_encuesta_view
 )
 from api import views
 
@@ -40,6 +41,7 @@ urlpatterns = [
     # Rutas para valoraciones
     path('valoracion-promedio/<int:sendero_id>/', valoracion_promedio, name='valoracion-promedio'),
     path('comentarios/<int:sendero_id>/valoraciones/', valoraciones_por_sendero, name='valoraciones-por-sendero'),
+    
     # Visitantes
     path('visitante/cedula/<str:cedula>/', obtener_visitante_por_cedula, name='visitante-por-cedula'),
 
@@ -53,3 +55,7 @@ urlpatterns = [
     path('dashboard/encuestas-hoy/', encuestas_hoy, name='encuestas-hoy'),
     path('dashboard/visitantes-por-pais/', visitantes_por_pais, name='visitantes-por-pais'),
     path('dashboard/visitantes-por-sendero/', visitantes_por_sendero, name='visitantes-por-sendero'),
+
+    # Encuesta
+    path('encuestas/registrar/', registrar_encuesta_view),
+]
