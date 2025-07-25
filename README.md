@@ -60,6 +60,9 @@ proyecto-api/
 |---------|-------------|--------|
 | 📊 **Dashboard API** | Endpoints para estadísticas y reportes | [📄 Dashboard](docs/dashboard.md) |
 | 📊 **Registro-Visita API** | Endpoints para visitantes y registro de visitantes | [📄 RegistroVisitante](docs/registro_visita.md) |
+| 👤 **Usuarios API** | Endpoints para Registro, autenticación y consulta de usuarios | [📄 Usuarios](docs/usuarios.md) |
+| 🏞️ **Senderos API** | Endpoints para Información de senderos | [📄 Senderos](docs/senderos.md) |
+| 📋 **Encuestas API** | Endpoints para Registro de encuestas asociadas a visitas | [📄 Encuestas](docs/encuestas.md) |
 
 ---
 ## 🌐 API Endpoints
@@ -79,6 +82,29 @@ POST /api/registrar_visitante_y_visita/   # Registra un visitante nuevo junto a 
 POST /api/registrar-visita/               # Registra una visita de un visitante existente
 POST /api/registrar-visita-id/            # Registra una visita por ID de visitante
 GET  /api/visitante/cedula/<cedula>/      # Consulta un visitante por su cédula/pasaporte
+```
+
+## 🌐 API Endpoints
+
+### 👤 Usuarios
+
+```
+POST /api/registro/            # Registrar un nuevo usuario
+GET  /api/usuario/<id>/        # Obtener usuario por ID
+POST /api/login/               # Autenticación y generación de token JWT
+```
+
+### 🏞️ Senderos
+
+```
+GET /api/sendero/<id>/         # Obtener información de un sendero por ID
+GET /api/senderos/             # Listar todos los senderos registrados
+```
+
+### 📋 Encuestas
+
+```
+POST /api/encuestas/registrar/  # Registrar una encuesta asociada a una visita
 ```
 
 ---
