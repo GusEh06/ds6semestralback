@@ -242,7 +242,7 @@ Retorna estadísticas de visitantes agrupados por sendero visitado, ordenados po
 ```
 ### 6. Reporte Completo en Excel
 
-**GET** `/dashboard/reporte-excel/`
+**GET** `/reporte-excel/`
 
 Genera y descarga un archivo Excel con información detallada del sistema, incluyendo visitantes, visitas, senderos, encuestas y estadísticas relevantes.
 
