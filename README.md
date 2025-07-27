@@ -76,7 +76,7 @@ GET /api/dashboard/visitantes-hoy/                   # Conteo diario
 GET /api/dashboard/encuestas-hoy/                    # Encuestas completadas
 GET /api/dashboard/visitantes-por-pais/              # Estadísticas geográficas
 GET /api/dashboard/visitantes-por-sendero/           # Popularidad de rutas
-GET /api/dashboard/reporte-excel/                    # Genera y descarga el reporte Excel completo
+GET /api/reporte-excel/                    # Genera y descarga el reporte Excel completo
 ```
 
 ### 📊 Registro-Visitante (Registrar visitas y Obtener visita mediante cedula)
