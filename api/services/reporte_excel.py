@@ -3,7 +3,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, time
 from django.db.models import Count, Avg
 from ..models import (
     Visitante, Sendero, RegistroVisita, 
